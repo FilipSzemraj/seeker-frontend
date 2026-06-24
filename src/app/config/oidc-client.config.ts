@@ -29,7 +29,11 @@ const cognitoAuthConfig: UserManagerSettings = {
     redirect_uri: appBaseUri,
     post_logout_redirect_uri: appBaseUri,
     response_type: "code",
-    scope: "email openid",
+    // `offline_access` makes Cognito issue a refresh token, which
+    // `automaticSilentRenew` uses to keep the session alive without an
+    // interactive redirect. Enable the corresponding auth flow on the Cognito
+    // App Client too, or no refresh token is returned.
+    scope: "email openid offline_access",
     // Persist tokens across full page reloads (PKCE, no client secret in the browser).
     userStore: new WebStorageStateStore({ store: window.localStorage }),
     // Keep the session alive transparently using the refresh token.

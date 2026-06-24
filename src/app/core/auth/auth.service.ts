@@ -26,6 +26,15 @@ export class AuthService {
     private readonly _postLoginPending = signal(false);
     readonly postLoginPending = this._postLoginPending.asReadonly();
 
+    /**
+     * True once the access token has expired and the silent refresh could not
+     * renew it (e.g. the refresh token is gone or revoked). The app surfaces a
+     * blocking dialog while this holds, asking the user to sign in again or
+     * return home — we never force an interactive redirect from the background.
+     */
+    private readonly _sessionExpired = signal(false);
+    readonly sessionExpired = this._sessionExpired.asReadonly();
+
     /** True when there is a non-expired user session. */
     readonly isAuthenticated = computed(() => {
         const user = this.currentUser();
@@ -60,8 +69,13 @@ export class AuthService {
             console.error("[auth] silent renew failed", error),
         );
         userManager.events.addAccessTokenExpired(() => {
-            // Refresh token also gone — force a fresh interactive sign-in.
-            void this.signIn();
+            // This only fires when the silent refresh failed to renew the token
+            // (no/expired refresh token). Drop the dead session and let the app
+            // show the blocking sign-in dialog instead of yanking the user to
+            // the Hosted UI from whatever page they were on.
+            void userManager.removeUser();
+            this.currentUser.set(null);
+            this._sessionExpired.set(true);
         });
         effect(() => {
                 if (this.isAuthenticated()) {
@@ -107,6 +121,11 @@ export class AuthService {
     /** Clear the post-login redirect flag once the app has acted on it. */
     consumePostLogin(): void {
         this._postLoginPending.set(false);
+    }
+
+    /** Dismiss the session-expired dialog (e.g. when the user heads home). */
+    clearSessionExpired(): void {
+        this._sessionExpired.set(false);
     }
 
     /** Begin the Cognito Hosted UI authorization-code (PKCE) flow. */

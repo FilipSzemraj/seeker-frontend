@@ -1,1 +1,8 @@
 <router-outlet />
+
+@if (auth.sessionExpired()) {
+  <app-session-expired-dialog
+    (logIn)="onSessionLogIn()"
+    (goHome)="onSessionGoHome()"
+  />
+}
