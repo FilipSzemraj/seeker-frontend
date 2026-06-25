@@ -4,13 +4,15 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { SearchService } from '../../core/search/search.service';
 import type { Listing } from '../../core/models/listing.model';
-import type { ListingFilters, SourceStatus } from '../../core/models/query.model';
+import type { GeoArea, ListingFilters, SourceStatus } from '../../core/models/query.model';
 import { emptyFilters } from '../../core/models/query.model';
 import type { ChatMessage } from '../../core/models/chat.model';
 import { SearchBar } from './components/search-bar/search-bar';
 import { FilterPanel } from './components/filter-panel/filter-panel';
 import { ListingList } from './components/listing-list/listing-list';
 import { ChatPanel } from './components/chat-panel/chat-panel';
+import { MapPanel } from './components/map-panel/map-panel';
+import { MapPreview } from './components/map-preview/map-preview';
 
 /**
  * The post-login search workspace. Owns all retrieval state and wires the two
@@ -19,7 +21,7 @@ import { ChatPanel } from './components/chat-panel/chat-panel';
  */
 @Component({
   selector: 'app-workspace',
-  imports: [RouterLink, SearchBar, FilterPanel, ListingList, ChatPanel],
+  imports: [RouterLink, SearchBar, FilterPanel, ListingList, ChatPanel, MapPanel, MapPreview],
   templateUrl: './workspace.html',
   styleUrl: './workspace.scss',
 })
@@ -37,11 +39,21 @@ export class Workspace {
   protected readonly filtersOpen = signal(false);
   protected readonly appliedFilters = signal<ListingFilters>(emptyFilters());
 
+  protected readonly mapOpen = signal(false);
+  protected readonly selectedUrl = signal<string | null>(null);
+  protected readonly geoFilter = signal<GeoArea | null>(null);
+
+  protected readonly selectedListing = computed(
+    () => this.listings().find((l) => l.source_url === this.selectedUrl()) ?? null,
+  );
+
   protected readonly chatOpen = signal(false);
   protected readonly chatBusy = signal(false);
   protected readonly messages = signal<ChatMessage[]>([]);
 
-  protected readonly activeFilterCount = computed(() => countActive(this.appliedFilters()));
+  protected readonly activeFilterCount = computed(
+    () => countActive(this.appliedFilters()) + (this.geoFilter() ? 1 : 0),
+  );
 
   constructor() {
     void this.loadInitial();
@@ -49,6 +61,18 @@ export class Workspace {
 
   protected toggleFilters(): void {
     this.filtersOpen.update((v) => !v);
+  }
+  protected toggleMap(): void {
+    this.mapOpen.update((v) => !v);
+  }
+  protected selectListing(url: string | null): void {
+    this.selectedUrl.set(url);
+  }
+
+  /** Map area picker — re-runs the search with the new geo radius merged in. */
+  protected onGeoChange(area: GeoArea | null): void {
+    this.geoFilter.set(area);
+    void this.onApplyFilters(this.appliedFilters());
   }
   protected toggleChat(): void {
     this.chatOpen.update((v) => !v);
@@ -96,18 +120,30 @@ export class Workspace {
   /** Structured path — the filter panel. */
   protected async onApplyFilters(filters: ListingFilters): Promise<void> {
     this.appliedFilters.set(filters);
+    const effective = this.withGeo(filters);
     this.loading.set(true);
     this.hasSearched.set(true);
-    const note = describeFilters(filters);
+    const note = describeFilters(effective);
     this.contextNote.set(note);
     try {
-      const res = await this.search.searchListings(filters);
+      const res = await this.search.searchListings(effective);
       this.listings.set(res.listings);
       this.total.set(res.total_matched);
       this.sources.set(res.source_availability);
+      // Drop a stale selection if it fell out of the new result set.
+      if (this.selectedUrl() && !res.listings.some((l) => l.source_url === this.selectedUrl())) {
+        this.selectedUrl.set(null);
+      }
     } finally {
       this.loading.set(false);
     }
+  }
+
+  /** Merge the map-picked area into a filter set as lat/lon/radius_km. */
+  private withGeo(filters: ListingFilters): ListingFilters {
+    const area = this.geoFilter();
+    if (!area) return { ...filters, lat: null, lon: null, radius_km: null };
+    return { ...filters, lat: area.lat, lon: area.lon, radius_km: area.radius_km };
   }
 
   private async loadInitial(): Promise<void> {
@@ -142,6 +178,7 @@ function countActive(f: ListingFilters): number {
   if (f.condition) n++;
   if (f.brightness) n++;
   if (f.cost_mode === 'strict') n++;
+  if (f.radius_km != null && f.lat != null && f.lon != null) n++;
   n += f.amenities?.length ?? 0;
   return n;
 }
@@ -152,5 +189,6 @@ function describeFilters(f: ListingFilters): string | undefined {
   else if (f.city) bits.push(f.city);
   if (f.max_cost != null) bits.push(`≤ ${f.max_cost} zł`);
   if (f.min_rooms != null) bits.push(`${f.min_rooms}+ rooms`);
+  if (f.radius_km != null && f.lat != null && f.lon != null) bits.push(`within ${f.radius_km} km`);
   return bits.length ? `filtered: ${bits.join(', ')}` : undefined;
 }

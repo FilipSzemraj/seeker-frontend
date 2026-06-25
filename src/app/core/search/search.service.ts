@@ -43,6 +43,10 @@ export class SearchService {
     if (f.max_cost != null && (l.total_monthly_cost ?? Infinity) > f.max_cost) return false;
     if (f.city && !ieq(l.geo.city, f.city)) return false;
     if (f.district && !ieq(l.geo.district, f.district)) return false;
+    if (f.lat != null && f.lon != null && f.radius_km != null) {
+      if (l.geo.lat == null || l.geo.lon == null) return false;
+      if (haversineKm(f.lat, f.lon, l.geo.lat, l.geo.lon) > f.radius_km) return false;
+    }
     if (f.min_rooms != null && (l.rooms ?? 0) < f.min_rooms) return false;
     if (f.furnished != null && (l.furnished ?? false) !== f.furnished) return false;
     if (f.design_style && l.enrichment?.design_style !== f.design_style) return false;
@@ -135,6 +139,21 @@ function delay(ms: number): Promise<void> {
 
 function ieq(a: string | null | undefined, b: string): boolean {
   return (a ?? '').trim().toLowerCase() === b.trim().toLowerCase();
+}
+
+/** Great-circle distance in kilometres between two lat/lon points. */
+export function haversineKm(aLat: number, aLon: number, bLat: number, bLon: number): number {
+  const R = 6371;
+  const dLat = toRad(bLat - aLat);
+  const dLon = toRad(bLon - aLon);
+  const lat1 = toRad(aLat);
+  const lat2 = toRad(bLat);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+
+function toRad(deg: number): number {
+  return (deg * Math.PI) / 180;
 }
 
 function haystack(l: Listing): string {

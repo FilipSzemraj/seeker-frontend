@@ -30,7 +30,7 @@ export const MOCK_LISTINGS: Listing[] = [
     total_monthly_cost: 3730,
     cost_incomplete: false,
     base_location_text: 'by the park, two tram stops to the centre',
-    geo: { city: 'Warszawa', district: 'Mokotów', street: 'Wawelska' },
+    geo: { city: 'Warszawa', district: 'Mokotów', street: 'Wawelska', lat: 52.1924, lon: 21.0198 },
     enrichment: {
       design_style: 'scandinavian',
       condition: 'excellent',
@@ -61,7 +61,7 @@ export const MOCK_LISTINGS: Listing[] = [
     total_monthly_cost: null,
     cost_incomplete: true,
     base_location_text: 'central, near the metro',
-    geo: { city: 'Warszawa', district: 'Śródmieście', street: 'Hoża' },
+    geo: { city: 'Warszawa', district: 'Śródmieście', street: 'Hoża', lat: 52.2272, lon: 21.0124 },
     enrichment: {
       design_style: 'industrial(loft)',
       condition: 'good',
@@ -92,7 +92,7 @@ export const MOCK_LISTINGS: Listing[] = [
     total_monthly_cost: 5150,
     cost_incomplete: false,
     base_location_text: 'quiet green estate, parking included',
-    geo: { city: 'Warszawa', district: 'Wilanów', street: 'Klimczaka' },
+    geo: { city: 'Warszawa', district: 'Wilanów', street: 'Klimczaka', lat: 52.1645, lon: 21.0904 },
     enrichment: {
       design_style: 'modern',
       condition: 'new',
@@ -123,7 +123,7 @@ export const MOCK_LISTINGS: Listing[] = [
     total_monthly_cost: 3100,
     cost_incomplete: false,
     base_location_text: 'arty, riverside district',
-    geo: { city: 'Warszawa', district: 'Praga-Północ', street: 'Ząbkowska' },
+    geo: { city: 'Warszawa', district: 'Praga-Północ', street: 'Ząbkowska', lat: 52.2546, lon: 21.0412 },
     enrichment: {
       design_style: 'vintage',
       condition: 'fair',
@@ -153,7 +153,7 @@ export const MOCK_LISTINGS: Listing[] = [
     total_monthly_cost: 3700,
     cost_incomplete: false,
     base_location_text: 'business district, metro at the door',
-    geo: { city: 'Warszawa', district: 'Wola', street: 'Prosta' },
+    geo: { city: 'Warszawa', district: 'Wola', street: 'Prosta', lat: 52.2317, lon: 20.9844 },
     enrichment: {
       design_style: 'minimalist',
       condition: 'new',
@@ -184,7 +184,7 @@ export const MOCK_LISTINGS: Listing[] = [
     total_monthly_cost: 4720,
     cost_incomplete: false,
     base_location_text: 'leafy, well-connected, quiet courtyard',
-    geo: { city: 'Warszawa', district: 'Żoliborz', street: 'Mickiewicza' },
+    geo: { city: 'Warszawa', district: 'Żoliborz', street: 'Mickiewicza', lat: 52.2698, lon: 20.9847 },
     enrichment: {
       design_style: 'classic',
       condition: 'excellent',
@@ -214,7 +214,7 @@ export const MOCK_LISTINGS: Listing[] = [
     total_monthly_cost: 3610,
     cost_incomplete: false,
     base_location_text: 'green, residential, close to the forest',
-    geo: { city: 'Warszawa', district: 'Ursynów', street: 'Jastrzębowskiego' },
+    geo: { city: 'Warszawa', district: 'Ursynów', street: 'Jastrzębowskiego', lat: 52.1497, lon: 21.0496 },
     enrichment: {
       design_style: 'boho',
       condition: 'good',
@@ -244,7 +244,7 @@ export const MOCK_LISTINGS: Listing[] = [
     total_monthly_cost: 3850,
     cost_incomplete: false,
     base_location_text: 'well-connected, near the university campus',
-    geo: { city: 'Warszawa', district: 'Ochota', street: 'Grójecka' },
+    geo: { city: 'Warszawa', district: 'Ochota', street: 'Grójecka', lat: 52.2102, lon: 20.9817 },
     enrichment: {
       design_style: 'scandinavian',
       condition: 'excellent',

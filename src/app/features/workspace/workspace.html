@@ -30,6 +30,50 @@
     </div>
 
     <section class="ws__results" aria-label="Listings">
+      <div class="ws__results-head">
+        <button
+          type="button"
+          class="btn btn--ghost ws__view-toggle"
+          [class.is-on]="mapOpen()"
+          [attr.aria-pressed]="mapOpen()"
+          (click)="toggleMap()"
+        >
+          <svg class="ws__view-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+            <path
+              d="M9 3 3 5.5v15L9 18l6 3 6-2.5v-15L15 6 9 3Z"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linejoin="round"
+            />
+            <path d="M9 3v15M15 6v15" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+          </svg>
+          {{ mapOpen() ? 'Hide map' : 'Show map' }}
+        </button>
+      </div>
+
+      @if (mapOpen()) {
+        @defer (when mapOpen()) {
+          <div class="ws__map" [class.ws__map--split]="selectedListing()">
+            <div class="ws__map-canvas">
+              <app-map-panel
+                [listings]="listings()"
+                [selectedUrl]="selectedUrl()"
+                [geo]="geoFilter()"
+                (select)="selectListing($event)"
+                (geoChange)="onGeoChange($event)"
+              />
+            </div>
+            @if (selectedListing(); as sel) {
+              <aside class="ws__map-aside">
+                <app-map-preview [listing]="sel" (close)="selectListing(null)" />
+              </aside>
+            }
+          </div>
+        } @placeholder {
+          <div class="ws__map-loading data">Loading map…</div>
+        }
+      }
+
       <app-listing-list
         [listings]="listings()"
         [loading]="loading()"
@@ -37,6 +81,9 @@
         [total]="total()"
         [contextNote]="contextNote()"
         [sources]="sources()"
+        [selectedUrl]="selectedUrl()"
+        [selectable]="mapOpen()"
+        (select)="selectListing($event)"
       />
     </section>
   </main>

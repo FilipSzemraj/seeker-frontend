@@ -1,0 +1,14 @@
+<div class="preview">
+  <div class="preview__head">
+    <span class="eyebrow">Selected on map</span>
+    <button type="button" class="preview__close" aria-label="Close preview" (click)="close.emit()">✕</button>
+  </div>
+
+  <div class="preview__stage">
+    @for (l of [listing()]; track l.source_url) {
+      <div class="preview__card">
+        <app-listing-card [listing]="l" variant="full" />
+      </div>
+    }
+  </div>
+</div>

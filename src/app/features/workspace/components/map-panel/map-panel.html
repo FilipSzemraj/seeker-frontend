@@ -1,0 +1,30 @@
+<div class="map">
+  <div #map class="map__canvas" role="application" aria-label="Map of matching listings"></div>
+
+  <div class="map__tools" role="group" aria-label="Map area filter">
+    <button
+      type="button"
+      class="btn btn--ghost map__tool"
+      [class.is-on]="picking()"
+      [attr.aria-pressed]="picking()"
+      (click)="togglePicking()"
+    >
+      {{ picking() ? 'Click the map to set the area' : 'Pick area' }}
+    </button>
+
+    <label class="map__radius">
+      <span class="map__radius-label">Radius <span class="data">{{ radiusKm() }} km</span></span>
+      <input
+        type="range"
+        min="0.5"
+        max="10"
+        step="0.5"
+        [value]="radiusKm()"
+        (input)="onRadiusInput($any($event.target).value)"
+        aria-label="Search radius in kilometres"
+      />
+    </label>
+
+    <button type="button" class="btn btn--ghost map__tool" (click)="clearArea()">Clear area</button>
+  </div>
+</div>

@@ -36,7 +36,25 @@
   } @else if (listings().length) {
     <div class="grid">
       @for (listing of listings(); track listing.source_url) {
-        <app-listing-card [listing]="listing" />
+        <div
+          class="grid__item"
+          [class.is-selected]="listing.source_url === selectedUrl()"
+          [class.is-selectable]="selectable()"
+          (click)="selectable() && select.emit(listing.source_url)"
+        >
+          @if (selectable()) {
+            <button
+              type="button"
+              class="grid__pick"
+              [class.is-on]="listing.source_url === selectedUrl()"
+              [attr.aria-pressed]="listing.source_url === selectedUrl()"
+              (click)="$event.stopPropagation(); select.emit(listing.source_url)"
+            >
+              {{ listing.source_url === selectedUrl() ? 'On map' : 'Show on map' }}
+            </button>
+          }
+          <app-listing-card [listing]="listing" />
+        </div>
       }
     </div>
   } @else {

@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 
 import type { Listing } from '../../../../core/models/listing.model';
 import type { SourceStatus } from '../../../../core/models/query.model';
@@ -34,6 +34,12 @@ export class ListingList {
   /** Short note on where these results came from (e.g. a chat prompt). */
   readonly contextNote = input<string | undefined>(undefined);
   readonly sources = input<Record<string, SourceStatus>>({});
+  /** `source_url` of the listing currently selected on the map, if any. */
+  readonly selectedUrl = input<string | null>(null);
+  /** Whether selecting a card is meaningful (map is open). */
+  readonly selectable = input(false);
+  /** Emits a listing's `source_url` when a card is picked from the list. */
+  readonly select = output<string>();
 
   protected readonly sourceLines = computed<SourceLine[]>(() =>
     Object.entries(this.sources()).map(([key, status]) => ({

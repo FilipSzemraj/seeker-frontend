@@ -33,6 +33,13 @@ export interface ListingFilters {
   limit: number;
 }
 
+/** A point + radius geographic area, as picked on the map. */
+export interface GeoArea {
+  lat: number;
+  lon: number;
+  radius_km: number;
+}
+
 /** Per-source availability, mirrors SourceStatus. */
 export interface SourceStatus {
   available: boolean;
