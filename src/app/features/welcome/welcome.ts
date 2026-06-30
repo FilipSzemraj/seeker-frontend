@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 
 import { AuthService } from '../../core/auth/auth.service';
 
-/** Example prompts the hero field types out to demonstrate the product. */
+/** Example prompts the hero field types out to demonstrate plain-words search. */
 const DEMOS = [
   'Bright 2-room in Mokotów under 3500 zł with a balcony',
   'Quiet pre-war flat near a park, high ceilings, furnished',
@@ -14,7 +14,7 @@ const DEMOS = [
 /**
  * The pre-login landing. A full-screen hero states what Seeker is; scrolling
  * reveals the three things it does and the sign-in. The hero's search field
- * auto-types real example prompts — a live demo of the conversational search.
+ * auto-types real example prompts — a live demo of plain-words listing search.
  */
 @Component({
   selector: 'app-welcome',

@@ -16,6 +16,7 @@ import type {
   SourceStatus,
 } from '../../core/models/query.model';
 import { SearchBar } from './components/search-bar/search-bar';
+import type { AskEvent } from './components/search-bar/search-bar';
 import { FilterPanel } from './components/filter-panel/filter-panel';
 import { ListingList } from './components/listing-list/listing-list';
 import { MapPanel } from './components/map-panel/map-panel';
@@ -109,13 +110,15 @@ export class Workspace {
   }
 
   /** Semantic path — the free-text search box (`POST /retrieve`). */
-  protected async onAsk(prompt: string): Promise<void> {
-    const trimmed = prompt.trim();
+  protected async onAsk(event: AskEvent): Promise<void> {
+    const trimmed = event.prompt.trim();
     if (!trimmed) return;
     this.beginSearch();
     this.contextNote.set(`from "${truncate(trimmed, 48)}"`);
     try {
-      const req = buildRetrieveRequest(this.schema(), trimmed, this.appliedFilters());
+      const req = buildRetrieveRequest(this.schema(), trimmed, this.appliedFilters(), {
+        rerank: event.rerank,
+      });
       const res = await this.search.retrieve(req);
       this.results.set(res.results.map((r) => ({ listing: toListingView(r.listing), score: r.score })));
       this.total.set(res.total);

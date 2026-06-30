@@ -28,6 +28,19 @@
 
   <button
     type="button"
+    class="bar__rerank"
+    [class.is-on]="rerank()"
+    (click)="toggleRerank()"
+    [attr.aria-pressed]="rerank()"
+    title="Rerank results for sharper relevance (uses more of your token budget)"
+  >
+    <span class="bar__rerank-dot" aria-hidden="true"></span>
+    Rerank
+    <span class="sr-only">{{ rerank() ? 'on' : 'off' }}</span>
+  </button>
+
+  <button
+    type="button"
     class="bar__filters"
     [class.is-open]="filtersOpen()"
     (click)="toggleFilters.emit()"

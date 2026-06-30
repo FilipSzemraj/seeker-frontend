@@ -29,10 +29,10 @@ const AMENITY_LABEL: Record<string, string> = {
 };
 
 /**
- * One listing, rendered identically in the results list and inline in chat.
- * `variant="compact"` trims it to a single row for the chat thread. The title
- * and footer link open the original portal listing (`source_url`) — there is
- * no in-app detail page; the card is the preview.
+ * One listing card — the unit of the results grid (`variant="full"`).
+ * `variant="compact"` trims it to a single dense row for tighter surfaces. The
+ * title and footer link open the original portal listing (`source_url`) — there
+ * is no in-app detail page; the card is the preview.
  */
 @Component({
   selector: 'app-listing-card',
